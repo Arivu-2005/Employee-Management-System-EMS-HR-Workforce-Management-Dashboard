@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Management - Apex EMS</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="sidebar-backdrop"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon"><i class="bi bi-people-fill"></i></div>
+          <span>Apex EMS</span>
+        </a>
+      </div>
+
+      <div class="sidebar-content">
+        <div class="sidebar-label">Core Modules</div>
+        <ul class="nav flex-column mb-3">
+          <li class="nav-item">
+            <a href="dashboard.html" class="nav-link-custom">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="employees.html" class="nav-link-custom">
+              <i class="bi bi-person-badge-fill"></i>
+              <span>Employees</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="departments.html" class="nav-link-custom">
+              <i class="bi bi-diagram-3-fill"></i>
+              <span>Departments</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="attendance.html" class="nav-link-custom active">
+              <i class="bi bi-calendar-check-fill"></i>
+              <span>Attendance</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="leaves.html" class="nav-link-custom">
+              <i class="bi bi-calendar-x-fill"></i>
+              <span>Leave Requests</span>
+              <span class="badge-counter bg-warning text-dark" id="badge-pending-leaves" style="display: none;">0</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-label">Operations</div>
+        <ul class="nav flex-column mb-3">
+          <li class="nav-item">
+            <a href="payroll.html" class="nav-link-custom">
+              <i class="bi bi-cash-stack"></i>
+              <span>Payroll & Salary</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="performance.html" class="nav-link-custom">
+              <i class="bi bi-trophy-fill"></i>
+              <span>Performance</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="reports.html" class="nav-link-custom">
+              <i class="bi bi-file-earmark-bar-graph-fill"></i>
+              <span>Reports & Analytics</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-label">System</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a href="settings.html" class="nav-link-custom">
+              <i class="bi bi-gear-fill"></i>
+              <span>Admin Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="javascript:void(0)" onclick="logout()" class="nav-link-custom text-danger">
+              <i class="bi bi-box-arrow-left"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Admin" class="avatar-sm admin-avatar-display">
+          <div class="overflow-hidden">
+            <div class="fw-semibold text-white small text-truncate admin-name-display">Alex Mercer</div>
+            <div class="text-muted" style="font-size: 0.75rem;">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Section -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle-btn d-lg-none" type="button">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="page-title-box">
+            <h1>Attendance Tracking</h1>
+            <p>Monitor daily check-ins, punctuality, absences, and billable work hours.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="btn btn-primary-custom" onclick="openAddAttendanceModal()">
+            <i class="bi bi-calendar2-plus-fill"></i> <span>Mark Attendance</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="app-content">
+        <!-- Daily Summary KPIs -->
+        <div class="row g-3 mb-4">
+          <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Present</p>
+                <h3 class="text-success" id="att-summary-present">0</h3>
+              </div>
+              <div class="stat-icon success" style="width: 42px; height: 42px; font-size: 1.15rem;">
+                <i class="bi bi-check-circle"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Late</p>
+                <h3 class="text-warning" id="att-summary-late">0</h3>
+              </div>
+              <div class="stat-icon warning" style="width: 42px; height: 42px; font-size: 1.15rem;">
+                <i class="bi bi-alarm"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Half-Day</p>
+                <h3 class="text-warning" id="att-summary-halfday">0</h3>
+              </div>
+              <div class="stat-icon warning" style="width: 42px; height: 42px; font-size: 1.15rem;">
+                <i class="bi bi-hourglass-split"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Absent</p>
+                <h3 class="text-danger" id="att-summary-absent">0</h3>
+              </div>
+              <div class="stat-icon danger" style="width: 42px; height: 42px; font-size: 1.15rem;">
+                <i class="bi bi-x-circle"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>On Leave</p>
+                <h3 class="text-info" id="att-summary-leave">0</h3>
+              </div>
+              <div class="stat-icon info" style="width: 42px; height: 42px; font-size: 1.15rem;">
+                <i class="bi bi-airplane"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Turnout Rate</p>
+                <h3 class="text-primary" id="att-summary-rate">0%</h3>
+              </div>
+              <div class="stat-icon primary" style="width: 42px; height: 42px; font-size: 1.15rem;">
+                <i class="bi bi-pie-chart-fill"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card card-custom mb-4">
+          <div class="card-custom-body p-3">
+            <div class="row g-2 align-items-center">
+              <div class="col-md-4">
+                <label class="form-label small text-muted mb-1">Select Attendance Date</label>
+                <input type="date" id="filter-attendance-date" class="form-control form-control-custom">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted mb-1">Status Filter</label>
+                <select id="filter-attendance-status" class="form-select form-select-custom">
+                  <option value="All">All Statuses</option>
+                  <option value="Present">Present</option>
+                  <option value="Late">Late</option>
+                  <option value="Half-Day">Half-Day</option>
+                  <option value="Absent">Absent</option>
+                  <option value="Leave">On Leave</option>
+                </select>
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-outline-custom w-100" onclick="loadAttendanceRecords()">
+                  <i class="bi bi-arrow-repeat"></i> Refresh Table
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Records Table -->
+        <div class="card card-custom">
+          <div class="card-custom-body p-0">
+            <div class="table-responsive">
+              <table class="table table-custom">
+                <thead>
+                  <tr>
+                    <th>Employee Name & ID</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Working Hours</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-table-body">
+                  <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">Loading attendance records...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mark / Edit Attendance Modal -->
+  <div class="modal fade" id="attendanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-custom">
+        <div class="modal-header modal-header-custom">
+          <h5 class="modal-title fw-bold" id="attendanceModalTitle">Mark Attendance</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="attendanceForm">
+          <div class="modal-body modal-body-custom">
+            <input type="hidden" id="att-edit-id">
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Employee *</label>
+              <select id="att-employee-id" class="form-select form-select-custom" required></select>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Date *</label>
+                <input type="date" id="att-date" class="form-control form-control-custom" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Status *</label>
+                <select id="att-status" class="form-select form-select-custom" required>
+                  <option value="Present" selected>Present</option>
+                  <option value="Late">Late</option>
+                  <option value="Half-Day">Half-Day</option>
+                  <option value="Absent">Absent</option>
+                  <option value="Leave">On Leave</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-4">
+                <label class="form-label small fw-semibold">Check In</label>
+                <input type="time" id="att-checkin" class="form-control form-control-custom">
+              </div>
+              <div class="col-4">
+                <label class="form-label small fw-semibold">Check Out</label>
+                <input type="time" id="att-checkout" class="form-control form-control-custom">
+              </div>
+              <div class="col-4">
+                <label class="form-label small fw-semibold">Hours</label>
+                <input type="number" step="0.1" id="att-hours" class="form-control form-control-custom" placeholder="8.5">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Remarks / Notes</label>
+              <input type="text" id="att-notes" class="form-control form-control-custom" placeholder="e.g. On-time, client visit...">
+            </div>
+          </div>
+          <div class="modal-footer modal-footer-custom">
+            <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary-custom">
+              <i class="bi bi-check2-circle"></i> Save Attendance
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- App JS & Attendance JS -->
+  <script src="js/app.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>

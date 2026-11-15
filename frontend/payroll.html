@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payroll & Salary Management - Apex EMS</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="sidebar-backdrop"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="dashboard.html" class="brand-logo">
+          <div class="brand-icon"><i class="bi bi-people-fill"></i></div>
+          <span>Apex EMS</span>
+        </a>
+      </div>
+
+      <div class="sidebar-content">
+        <div class="sidebar-label">Core Modules</div>
+        <ul class="nav flex-column mb-3">
+          <li class="nav-item">
+            <a href="dashboard.html" class="nav-link-custom">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="employees.html" class="nav-link-custom">
+              <i class="bi bi-person-badge-fill"></i>
+              <span>Employees</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="departments.html" class="nav-link-custom">
+              <i class="bi bi-diagram-3-fill"></i>
+              <span>Departments</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="attendance.html" class="nav-link-custom">
+              <i class="bi bi-calendar-check-fill"></i>
+              <span>Attendance</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="leaves.html" class="nav-link-custom">
+              <i class="bi bi-calendar-x-fill"></i>
+              <span>Leave Requests</span>
+              <span class="badge-counter bg-warning text-dark" id="badge-pending-leaves" style="display: none;">0</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-label">Operations</div>
+        <ul class="nav flex-column mb-3">
+          <li class="nav-item">
+            <a href="payroll.html" class="nav-link-custom active">
+              <i class="bi bi-cash-stack"></i>
+              <span>Payroll & Salary</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="performance.html" class="nav-link-custom">
+              <i class="bi bi-trophy-fill"></i>
+              <span>Performance</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="reports.html" class="nav-link-custom">
+              <i class="bi bi-file-earmark-bar-graph-fill"></i>
+              <span>Reports & Analytics</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-label">System</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a href="settings.html" class="nav-link-custom">
+              <i class="bi bi-gear-fill"></i>
+              <span>Admin Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="javascript:void(0)" onclick="logout()" class="nav-link-custom text-danger">
+              <i class="bi bi-box-arrow-left"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Admin" class="avatar-sm admin-avatar-display">
+          <div class="overflow-hidden">
+            <div class="fw-semibold text-white small text-truncate admin-name-display">Alex Mercer</div>
+            <div class="text-muted" style="font-size: 0.75rem;">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Section -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle-btn d-lg-none" type="button">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="page-title-box">
+            <h1>Compensation & Payroll</h1>
+            <p>Generate monthly salary calculations, manage deductions, and issue payslips.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button class="btn btn-primary-custom" onclick="openGeneratePayrollModal()">
+            <i class="bi bi-gear-wide-connected"></i> <span>Run Payroll Cycle</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="app-content">
+        <!-- Payroll KPIs -->
+        <div class="row g-3 mb-4">
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Gross Disbursed</p>
+                <h3 class="text-dark" id="payroll-kpi-gross">$0.00</h3>
+                <span class="small text-muted">Total earnings</span>
+              </div>
+              <div class="stat-icon primary">
+                <i class="bi bi-coin"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Total Deductions</p>
+                <h3 class="text-danger" id="payroll-kpi-deductions">$0.00</h3>
+                <span class="small text-muted">Tax & PF withholding</span>
+              </div>
+              <div class="stat-icon danger">
+                <i class="bi bi-dash-circle"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Net Take-Home</p>
+                <h3 class="text-success" id="payroll-kpi-net">$0.00</h3>
+                <span class="small text-muted">Actual paid out</span>
+              </div>
+              <div class="stat-icon success">
+                <i class="bi bi-wallet2"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-md-6">
+            <div class="stat-widget p-3 mb-0">
+              <div class="stat-details">
+                <p>Salary Slips</p>
+                <h3 class="text-primary" id="payroll-kpi-slips">0 Issued</h3>
+                <span class="small text-muted">Statements generated</span>
+              </div>
+              <div class="stat-icon info">
+                <i class="bi bi-receipt"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card card-custom mb-4">
+          <div class="card-custom-body p-3">
+            <div class="row g-2 align-items-center">
+              <div class="col-md-4">
+                <label class="form-label small text-muted mb-1">Pay Period Month</label>
+                <select id="filter-payroll-month" class="form-select form-select-custom"></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted mb-1">Fiscal Year</label>
+                <select id="filter-payroll-year" class="form-select form-select-custom"></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted mb-1">Disbursement Status</label>
+                <select id="filter-payroll-status" class="form-select form-select-custom">
+                  <option value="All">All Disbursement Statuses</option>
+                  <option value="Paid" selected>Paid</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Unpaid">Unpaid</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payroll Records Table -->
+        <div class="card card-custom">
+          <div class="card-custom-body p-0">
+            <div class="table-responsive">
+              <table class="table table-custom">
+                <thead>
+                  <tr>
+                    <th>Payslip ID</th>
+                    <th>Employee Name</th>
+                    <th>Cycle</th>
+                    <th>Basic</th>
+                    <th>Gross</th>
+                    <th>Deductions</th>
+                    <th>Net Disbursed</th>
+                    <th class="text-end">Statement</th>
+                  </tr>
+                </thead>
+                <tbody id="payroll-table-body">
+                  <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">Loading payroll records...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Generate Payroll Modal -->
+  <div class="modal fade" id="generatePayrollModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-custom">
+        <div class="modal-header modal-header-custom">
+          <h5 class="modal-title fw-bold">Execute Monthly Payroll Run</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="generatePayrollForm">
+          <div class="modal-body modal-body-custom">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Target Employee Roster</label>
+              <select id="gen-employee-id" class="form-select form-select-custom" required></select>
+              <div class="form-text small text-muted">Duplicates are automatically prevented if payroll was already run for that employee and period.</div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Payroll Month</label>
+                <select id="gen-payroll-month" class="form-select form-select-custom" required></select>
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Payroll Year</label>
+                <select id="gen-payroll-year" class="form-select form-select-custom" required></select>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Extra Overtime Hours</label>
+                <input type="number" step="0.5" id="gen-ot-hours" class="form-control form-control-custom" placeholder="0" value="0">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Performance Bonus ($)</label>
+                <input type="number" step="10" id="gen-bonus" class="form-control form-control-custom" placeholder="0" value="0">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer modal-footer-custom">
+            <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary-custom" id="btnSubmitPayroll">
+              <i class="bi bi-gear-fill"></i> Execute Payroll Generation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Salary Slip View Modal -->
+  <div class="modal fade" id="salarySlipModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content modal-content-custom">
+        <div class="modal-header modal-header-custom no-print">
+          <h5 class="modal-title fw-bold">Employee Salary Statement</h5>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-primary-custom" onclick="printSalarySlip()">
+              <i class="bi bi-printer"></i> Print / Download PDF
+            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="modal-body modal-body-custom" id="salary-slip-content">
+          <div class="text-center py-4"><span class="spinner-border spinner-border-sm"></span> Loading slip...</div>
+        </div>
+        <div class="modal-footer modal-footer-custom no-print">
+          <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">Close Window</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- App JS & Payroll JS -->
+  <script src="js/app.js"></script>
+  <script src="js/payroll.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+/* Responsive Design Styles for EMS */
+
+@media (max-width: 991.98px) {
+  :root {
+    --sidebar-width: 260px;
+  }
+
+  .app-sidebar {
+    transform: translateX(-100%);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .app-sidebar.show-mobile {
+    transform: translateX(0);
+  }
+
+  .app-main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.6);
+    z-index: 1035;
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-backdrop.show {
+    display: block;
+  }
+
+  .app-content {
+    padding: 1.25rem;
+  }
+
+  .card-custom-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-custom-header .d-flex {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .search-input-group {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .app-topbar {
+    padding: 0 1rem;
+  }
+
+  .page-title-box h1 {
+    font-size: 1.1rem;
+  }
+
+  .page-title-box p {
+    display: none;
+  }
+
+  .stat-widget {
+    padding: 1rem;
+  }
+
+  .stat-details h3 {
+    font-size: 1.35rem;
+  }
+
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.25rem;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .salary-slip-container {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .btn-primary-custom, .btn-outline-custom {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  .topbar-right .btn-user-text {
+    display: none;
+  }
+}
